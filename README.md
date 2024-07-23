@@ -13,23 +13,18 @@ A Python application to generate customizable digital business cards with QR cod
 
 # Dependencies
 
-Ensure you have Python installed. Install the necessary dependencies with the following command:
+Ensure you have Python installed. Install the necessary dependencies with the following command :
 
-bash
+    pip install pillow qrcode[pil] vobject
 
-pip install pillow qrcode[pil] vobject
-
-Usage
+# Usage
 
 Clone the repository and navigate to the directory:
 
-bash
 
-git clone https://github.com/yourusername/business-card-generator.git
-cd business-card-generator
+    git clone https://github.com/yourusername/business-card-generator.git
+    cd business-card-generator
 
-Run the application:
+# Run the application:
 
-bash
-
-python business_card_generator.py
+    python business_card_generator.py
