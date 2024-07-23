@@ -34,13 +34,19 @@ def generate_qr_code(data, size=300):
 def draw_text(draw, position, text, font, color, center=True):
     # Draw text on the image // Dessine du texte sur l'image
     if center:
-        text_width, text_height = draw.textsize(text, font=font)
+        text_bbox = draw.textbbox((0, 0), text, font=font)
+        text_width = text_bbox[2] - text_bbox[0]
         position = (position[0] - text_width // 2, position[1])
     draw.text(position, text, font=font, fill=color)
 
 def create_business_card(width, height, name, title, company, phone, email, font_path, font_sizes, name_color, title_color, company_color, background_color, background_image_path, output_path):
     # Create a blank image with background color // Crée une image vierge avec une couleur de fond
-    base = Image.new('RGBA', (width, height), background_color)
+    base = Image.new('RGBA', (width, height), background_color if background_color else (173, 216, 230))
+    
+    border_color = (0, 0, 0)
+    border_width = 10
+    draw = ImageDraw.Draw(base)
+    draw.rectangle([border_width // 2, border_width // 2, width - border_width // 2, height - border_width // 2], outline=border_color, width=border_width)
     
     if background_image_path:
         # Load and resize background image while maintaining aspect ratio // Charge et redimensionne l'image de fond en conservant le ratio
@@ -54,7 +60,7 @@ def create_business_card(width, height, name, title, company, phone, email, font
             target_height = int(target_width / bg_image_ratio)
         
         bg_image = bg_image.resize((target_width, target_height), Image.Resampling.LANCZOS)
-        base.paste(bg_image, ((width - target_width) // 2, height - target_height), bg_image)
+        base.paste(bg_image, ((width - target_width) // 2, height - target_height - border_width), bg_image)
     
     # Generate vCard data and QR code // Génère les données vCard et le code QR
     vcard_data = create_vcard(name, title, company, phone, email)
@@ -69,12 +75,6 @@ def create_business_card(width, height, name, title, company, phone, email, font
         'title': (width // 2, text_y_start + 60),
         'company': (width // 2, text_y_start + 120)
     }
-    
-    # Draw border // Dessine une bordure
-    border_color = (0, 0, 0)
-    border_width = 10
-    draw = ImageDraw.Draw(base)
-    draw.rectangle([border_width // 2, border_width // 2, width - border_width // 2, height - border_width // 2], outline=border_color, width=border_width)
     
     # Paste QR code // Colle le code QR
     base.paste(qr_img, qr_position, qr_img)
@@ -100,7 +100,7 @@ def create_business_card(width, height, name, title, company, phone, email, font
 def select_color():
     # Open color chooser // Ouvre le sélecteur de couleur
     color_code = colorchooser.askcolor(title="Choose color")
-    return color_code[1]
+    return color_code[1] if color_code[1] else "#ADD8E6"
 
 def select_background_image():
     # Open file dialog to select background image // Ouvre la boîte de dialogue pour sélectionner une image de fond
